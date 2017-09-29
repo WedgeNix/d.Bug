@@ -2,6 +2,7 @@ package d
 
 import (
 	"bufio"
+	"log"
 	"os"
 	"strings"
 )
@@ -9,16 +10,22 @@ import (
 type Consts map[string]bool
 
 var (
-	consts Consts
+	consts = Consts{}
 	debugr = bufio.NewReader(os.Stdin)
 )
 
 func Inject(c Consts) {
-	consts = c
+	for Const, b := range c {
+		_, found := consts[Const]
+		if found {
+			panic("constant collision (" + Const + ")")
+		}
+		consts[Const] = b
+	}
 }
 
 func Bug(constant string) bool {
-	if consts == nil {
+	if len(consts) == 0 {
 		panic("must inject constants")
 	}
 	b, found := consts[constant]
@@ -29,10 +36,10 @@ func Bug(constant string) bool {
 		return false
 	}
 	for {
-		println("WARNING: " + constant + " ON. Continue? (y/n)")
+		log.Println("WARNING: " + constant + " ON. Continue? (y/n)")
 		input, _ := debugr.ReadString('\n')
 		if strings.HasPrefix(input, "n") {
-			panic(constant + " rejected")
+			log.Fatalln(constant + " rejected")
 		} else if strings.HasPrefix(input, "y") {
 			return true
 		}
