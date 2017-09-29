@@ -1,30 +1,38 @@
 package d
 
-const (
-	expiredSessions = "expired sessions"
+import (
+	"bufio"
+	"os"
+	"strings"
 )
 
-var (
-	settings = map[string]bool{
-		expiredSessions: true,
-	}
+type Consts map[string]bool
 
+var (
+	consts Consts
 	debugr = bufio.NewReader(os.Stdin)
 )
 
-func debug(setting string) bool {
-	b, found := settings[setting]
+func Inject(c Consts) {
+	consts = c
+}
+
+func Bug(constant string) bool {
+	if consts == nil {
+		panic("must inject constants")
+	}
+	b, found := consts[constant]
 	if !found {
-		panic(setting + " not found")
+		panic(constant + " not found")
 	}
 	if !b {
 		return false
 	}
 	for {
-		println("WARNING: " + setting + " ON. Continue? (y/n)")
+		println("WARNING: " + constant + " ON. Continue? (y/n)")
 		input, _ := debugr.ReadString('\n')
 		if strings.HasPrefix(input, "n") {
-			panic(setting + " rejected")
+			panic(constant + " rejected")
 		} else if strings.HasPrefix(input, "y") {
 			return true
 		}
