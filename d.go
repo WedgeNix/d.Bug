@@ -2,6 +2,7 @@ package d
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -36,7 +37,7 @@ func Bug(constant string) bool {
 		return false
 	}
 	for {
-		log.Print("WARNING: " + constant + " ON. Continue? (y/n)  ")
+		fmt.Print("WARNING: " + constant + " ON. Continue? (y/n)  ")
 		input, _ := debugr.ReadString('\n')
 		if strings.HasPrefix(input, "n") {
 			log.Fatalln(constant + " rejected")
