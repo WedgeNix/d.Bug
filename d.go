@@ -36,7 +36,7 @@ func Bug(constant string) bool {
 		return false
 	}
 	for {
-		log.Println("WARNING: " + constant + " ON. Continue? (y/n)")
+		log.Print("WARNING: " + constant + " ON. Continue? (y/n)  ")
 		input, _ := debugr.ReadString('\n')
 		if strings.HasPrefix(input, "n") {
 			log.Fatalln(constant + " rejected")
