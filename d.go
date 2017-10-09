@@ -11,7 +11,7 @@ import (
 
 type Consts map[string]bool
 type konst struct {
-	sync.Once
+	*sync.Once
 	b bool
 }
 
