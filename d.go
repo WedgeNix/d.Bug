@@ -11,12 +11,12 @@ import (
 
 type Consts map[string]bool
 type konst struct {
-	*sync.Once
+	sync.Once
 	b bool
 }
 
 var (
-	consts = map[string]konst{}
+	consts = map[string]*konst{}
 	debugr = bufio.NewReader(os.Stdin)
 )
 
@@ -26,7 +26,7 @@ func Inject(c Consts) {
 		if found {
 			panic("constant collision (" + Const + ")")
 		}
-		consts[Const] = konst{b: b}
+		consts[Const] = &konst{b: b}
 	}
 }
 
