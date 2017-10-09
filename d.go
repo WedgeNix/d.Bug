@@ -6,12 +6,17 @@ import (
 	"log"
 	"os"
 	"strings"
+	"sync"
 )
 
 type Consts map[string]bool
+type konst struct {
+	sync.Once
+	b bool
+}
 
 var (
-	consts = Consts{}
+	consts = map[string]konst{}
 	debugr = bufio.NewReader(os.Stdin)
 )
 
@@ -21,7 +26,7 @@ func Inject(c Consts) {
 		if found {
 			panic("constant collision (" + Const + ")")
 		}
-		consts[Const] = b
+		consts[Const] = konst{b: b}
 	}
 }
 
@@ -29,20 +34,23 @@ func Bug(constant string) bool {
 	if len(consts) == 0 {
 		panic("must inject constants")
 	}
-	b, found := consts[constant]
+	k, found := consts[constant]
 	if !found {
 		panic(constant + " not found")
 	}
-	if !b {
+	if !k.b {
 		return false
 	}
-	for {
-		fmt.Print("WARNING: " + constant + " ON. Continue? (y/n)  ")
-		input, _ := debugr.ReadString('\n')
-		if strings.HasPrefix(input, "n") {
-			log.Fatalln(constant + " rejected")
-		} else if strings.HasPrefix(input, "y") {
-			return true
+	k.Do(func() {
+		for {
+			fmt.Print("WARNING: " + constant + " ON. Continue? (y/n)  ")
+			input, _ := debugr.ReadString('\n')
+			if strings.HasPrefix(input, "n") {
+				log.Fatalln(constant + " rejected")
+			} else if strings.HasPrefix(input, "y") {
+				return
+			}
 		}
-	}
+	})
+	return true
 }
